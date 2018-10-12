@@ -298,7 +298,7 @@ static void BSP_Config(void)
   LCD_LOG_SetHeader((uint8_t *)"Webserver Application Netconn API");
   LCD_LOG_SetFooter((uint8_t *)"STM32746G-DISCO board");
   
-  LCD_UsrLog ((char *)"  State: Ethernet Initialization ...\n");
+  //LCD_UsrLog ((char *)"  State: Ethernet Initialization ...\n");
 }
 
 /**

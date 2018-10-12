@@ -8,7 +8,7 @@
 
 int pointInRect(int rectX, int rectY, int rectSizeX, int rectSizeY, int pointX, int pointY);
 
-
+void changeBulbState(int state);
 void TouchScreen_Thread(void const *argument);
 
 #endif /* __TOUCHSCREEN_H */

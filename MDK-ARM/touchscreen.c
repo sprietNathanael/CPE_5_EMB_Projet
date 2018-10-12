@@ -1,6 +1,9 @@
 #include "touchscreen.h"
 
-
+static void displayBaseBulb();
+static void displayBulbState(int state);
+int changeStatusBulb = 0;
+int statusBulbState = -1;
 
 void TouchScreen_Thread(void const *argument)
 {
@@ -9,12 +12,12 @@ void TouchScreen_Thread(void const *argument)
 	int x = 0;
 	int y = 0;
 	const int onX = BSP_LCD_GetXSize()/5;
-	const int onY = 2*(BSP_LCD_GetYSize() / 4) -15;
+	const int onY = (BSP_LCD_GetYSize() / 4);
 	const int onSizeX = BSP_LCD_GetXSize()/5;
 	const int onSizeY = 45;
 	
 	const int offX = 3*(BSP_LCD_GetXSize()/5);
-	const int offY = 2*(BSP_LCD_GetYSize() / 4) -15;
+	const int offY = (BSP_LCD_GetYSize() / 4);
 	const int offSizeX = BSP_LCD_GetXSize()/5;
 	const int offSizeY = 45;
 	uint8_t  text[50];
@@ -43,6 +46,10 @@ void TouchScreen_Thread(void const *argument)
     BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize() - 95, (uint8_t *)"ERROR", CENTER_MODE);
     BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize() - 80, (uint8_t *)"Touchscreen cannot be initialized", CENTER_MODE);
   }
+	
+	displayBaseBulb();
+	displayBulbState(-1);
+	
 	for(;;)
   {
 		if (status == TS_OK)
@@ -62,11 +69,13 @@ void TouchScreen_Thread(void const *argument)
 				{
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = ON  ", x, y, onX, onY, onSizeX, onSizeY);
 					turnOnLamp();
+					changeBulbState(1);
 				}
 				else if(pointInRect(offX, offY, offSizeX, offSizeY, x, y))
 				{
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = OFF  ", x, y, offX, offY, offSizeX, offSizeY);
 					turnOffLamp();
+					changeBulbState(0);
 				}
 				else
 				{
@@ -77,6 +86,11 @@ void TouchScreen_Thread(void const *argument)
 				
 
 			}
+		}
+		if(changeStatusBulb)
+		{
+			displayBulbState(statusBulbState);
+			changeStatusBulb = 0;
 		}
 		osDelay(50);
 	}
@@ -90,4 +104,62 @@ static int pointInRect(int rectX, int rectY, int rectSizeX, int rectSizeY, int p
 	if(pointY > rectY + rectSizeY) return 0;
 	
 	return 1;
+}
+
+void changeBulbState(int state)
+{
+	changeStatusBulb = 1;
+	statusBulbState = state;
+}	
+
+static void displayBaseBulb(void)
+{
+	int radius = 30;
+	int border = 5;
+	int rectY = 20;
+	int rectWidth = 40;
+	int rectHeight = 20;
+	int x = BSP_LCD_GetXSize()/2;
+	int y =  BSP_LCD_GetYSize()/2;
+	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+	BSP_LCD_FillCircle(x, y+rectY+rectHeight, (rectWidth/2)-1);
+	BSP_LCD_FillCircle(x, y, radius);
+	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+	BSP_LCD_FillRect(x-(rectWidth/2),y+rectY, rectWidth, rectHeight);
+	BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+	BSP_LCD_FillRect((x-(rectWidth/2)),y+rectY+rectHeight, rectWidth, border);
+	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+}
+
+static void displayBulbState(int state)
+{
+	uint32_t color;
+	
+	int radius = 30;
+	int border = 5;
+	int rectY = 20;
+	int rectWidth = 40;
+	int rectHeight = 20;
+	int x = BSP_LCD_GetXSize()/2;
+	int y =  BSP_LCD_GetYSize()/2;
+	if(state == 1)
+	{
+		color = LCD_COLOR_YELLOW;
+		
+	}
+	else
+	{
+		color = LCD_COLOR_WHITE;
+	}
+	BSP_LCD_SetTextColor(color);
+	BSP_LCD_FillCircle(x, y, radius - border);
+	BSP_LCD_FillRect((x-(rectWidth/2) + border),y+rectY, rectWidth-(border * 2), rectHeight-border);
+	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+	
+	if(state == -1)
+	{
+		BSP_LCD_SetFont(&Font24);
+		BSP_LCD_DisplayStringAt(x-6, y-12, (uint8_t *)"?", LEFT_MODE);
+		BSP_LCD_SetFont(&Font12);
+	}
 }
