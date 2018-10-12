@@ -17,7 +17,7 @@ uint8_t data_frame;
 
 
 
-void gpioPG6_init()
+void x10_init()
 {
 	GPIO_InitTypeDef  gpio_init_structure;
 	/* Enable the GPIO clock */
@@ -38,6 +38,7 @@ void gpioPG6_init()
 void GPIO_Thread(void const *argument)
 {
   (void) argument;
+	x10_init();
   uint32_t PreviousWakeTime = osKernelSysTick();
 	int i  = 0;
 	//x10sendFrame(0x6666);

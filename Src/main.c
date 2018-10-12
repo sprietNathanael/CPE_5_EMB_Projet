@@ -102,10 +102,7 @@ int main(void)
   
   /* Configure the system clock to 200 MHz */
   SystemClock_Config(); 
-	
-	//Init D2
-	gpioPG6_init();
-	
+		
 	initClock();
   
   /* Init thread */

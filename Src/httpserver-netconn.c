@@ -52,6 +52,8 @@
 #include <stdio.h>
 #include "httpserver-netconn.h"
 #include "cmsis_os.h"
+#include "x10.h"
+#include "touchscreen.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -223,6 +225,24 @@ static void http_server_serve(struct netconn *conn)
         else if((strncmp(buf, "GET /STM32F7xx.html", 19) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
         {
           /* Load STM32F7xx page */
+          fs_open(&file, "/STM32F7xx.html"); 
+          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
+          fs_close(&file);
+        }
+				else if((strncmp(buf, "GET /allume", 11) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
+        {
+          /* Load STM32F7xx page */
+					turnOnLamp();
+					changeBulbState(1);
+          fs_open(&file, "/STM32F7xx.html"); 
+          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
+          fs_close(&file);
+        }
+				else if((strncmp(buf, "GET /etteint", 12) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
+        {
+          /* Load STM32F7xx page */
+					turnOffLamp();
+					changeBulbState(0);
           fs_open(&file, "/STM32F7xx.html"); 
           netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
           fs_close(&file);

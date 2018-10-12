@@ -12,7 +12,7 @@
 #define X10_INIT_2_TIMING 8
 
 void GPIO_Thread(void const *argument);
-void gpioPG6_init(void);
+void x10_init(void);
 void nextX10frame(void);
 void x10sendFrame(uint8_t addr_frame, uint8_t data_frame);
 void x10sendSingleFrame(uint8_t addr_frame, uint8_t data_frame);
