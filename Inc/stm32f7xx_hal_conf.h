@@ -176,7 +176,7 @@
 #define MAC_ADDR0   2U
 #define MAC_ADDR1   0U
 #define MAC_ADDR2   0U
-#define MAC_ADDR3   0U
+#define MAC_ADDR3   2U
 #define MAC_ADDR4   0U
 #define MAC_ADDR5   0U
 

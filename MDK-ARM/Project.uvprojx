@@ -460,6 +460,11 @@
               <FileType>1</FileType>
               <FilePath>../../../../../../Drivers/BSP/STM32746G-Discovery/stm32746g_discovery_lcd.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32746g_discovery_ts.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\Drivers\BSP\STM32746G-Discovery\stm32746g_discovery_ts.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -839,6 +844,36 @@
               <FileName>x10.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\x10.c</FilePath>
+            </File>
+            <File>
+              <FileName>touchscreen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\touchscreen.c</FilePath>
+            </File>
+            <File>
+              <FileName>touchscreen.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Inc\touchscreen.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/BSP/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>ov9655.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\Drivers\BSP\Components\ov9655\ov9655.c</FilePath>
+            </File>
+            <File>
+              <FileName>ft5336.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\Drivers\BSP\Components\ft5336\ft5336.c</FilePath>
+            </File>
+            <File>
+              <FileName>wm8994.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\Drivers\BSP\Components\wm8994\wm8994.c</FilePath>
             </File>
           </Files>
         </Group>

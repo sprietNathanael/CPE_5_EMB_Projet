@@ -55,6 +55,7 @@
 #include "httpserver-netconn.h"
 #include "lcd_log.h"
 #include "x10.h"
+#include "touchscreen.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -62,6 +63,7 @@
 /* Private variables ---------------------------------------------------------*/
 struct netif gnetif; /* network interface structure */
 osThreadId GPIO_ThreadId;
+osThreadId TouchScreen_ThreadId;
 TIM_HandleTypeDef    TimHandle3;
 uint32_t uwPrescalerValue = 0;
 
@@ -151,6 +153,9 @@ static void StartThread(void const * argument)
 	
 	osThreadDef(GPIO_TH, GPIO_Thread, osPriorityBelowNormal, 0, configMINIMAL_STACK_SIZE);
 	GPIO_ThreadId = osThreadCreate(osThread(GPIO_TH), NULL);
+	
+	osThreadDef(TOUCHSCREEN_TH, TouchScreen_Thread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+	TouchScreen_ThreadId = osThreadCreate(osThread(TOUCHSCREEN_TH), NULL);
 
   for( ;; )
   {
@@ -161,7 +166,6 @@ static void StartThread(void const * argument)
 
 void initClock(void)
 {
-	/* Compute the prescaler value to have TIMx counter clock equal to 10000 Hz */
   uwPrescalerValue = (uint32_t)(SystemCoreClock  / 2) / 1000000 - 1;
 	//uwPrescalerValue = (uint32_t)((SystemCoreClock / 2) / 10000) - 1;
 

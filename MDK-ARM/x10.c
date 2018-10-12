@@ -11,6 +11,10 @@ int currentFrameIndex = 0;
 int initialPhase = 0;
 int initialActive = 1;
 int timerEnd = 0;
+char sendFrame_flag = 0;
+uint8_t addr_frame;
+uint8_t data_frame;
+
 
 
 void gpioPG6_init()
@@ -40,25 +44,54 @@ void GPIO_Thread(void const *argument)
   
   for(;;)
   {
-		HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_RESET);
+		/*HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_RESET);
 		for(i = 0; i < 5; i++)
 		{
-			x10sendFrame(0x60,0x10);
+			x10sendSingleFrame(0x60,0x10);
 			osDelay(150);
 		}			
-		osDelay(13000);
+		osDelay(2500);
 		for(i = 0; i < 5; i++)
 		{
-			x10sendFrame(0x60,0x30);
+			x10sendSingleFrame(0x60,0x30);
 			osDelay(150);
+		}*/
+		osDelay(500);
+		if(sendFrame_flag)
+		{
+			x10sendFrame(addr_frame,data_frame);
+			sendFrame_flag = 0;
 		}
-		osDelay(13000);
 		// D2
 		//HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_6);
   }
 }
 
 void x10sendFrame(uint8_t addr_frame, uint8_t data_frame)
+{
+	int i  = 0;
+	for(i = 0; i < 5; i++)
+		{
+			x10sendSingleFrame(addr_frame,data_frame);
+			osDelay(150);
+		}			
+}
+
+void turnOnLamp(void)
+{
+	addr_frame = 0x60;
+	data_frame = 0x10;
+	sendFrame_flag = 1;
+}
+
+void turnOffLamp()
+{
+	addr_frame = 0x60;
+	data_frame = 0x30;
+	sendFrame_flag = 1;
+}
+
+void x10sendSingleFrame(uint8_t addr_frame, uint8_t data_frame)
 {
 	currentFrameIndex = 32;
 	uint8_t addr_frame_inv = (~addr_frame);

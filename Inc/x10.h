@@ -15,5 +15,8 @@ void GPIO_Thread(void const *argument);
 void gpioPG6_init(void);
 void nextX10frame(void);
 void x10sendFrame(uint8_t addr_frame, uint8_t data_frame);
+void x10sendSingleFrame(uint8_t addr_frame, uint8_t data_frame);
+void turnOnLamp(void);
+void turnOffLamp(void);
 
-#endif /* __MAIN_H */
+#endif /* __X10_H */
