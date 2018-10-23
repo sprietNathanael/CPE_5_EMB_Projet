@@ -11,9 +11,12 @@ int currentFrameIndex = 0;
 int initialPhase = 0;
 int initialActive = 1;
 int timerEnd = 0;
-char sendFrame_flag = 0;
 uint8_t addr_frame;
 uint8_t data_frame;
+
+
+osEvent sendMessageX10_event;
+extern osMessageQId sendMessageX10;
 
 
 
@@ -41,7 +44,6 @@ void GPIO_Thread(void const *argument)
 	x10_init();
   uint32_t PreviousWakeTime = osKernelSysTick();
 	int i  = 0;
-	//x10sendFrame(0x6666);
   
   for(;;)
   {
@@ -58,10 +60,19 @@ void GPIO_Thread(void const *argument)
 			osDelay(150);
 		}*/
 		osDelay(500);
-		if(sendFrame_flag)
+		sendMessageX10_event = osMessageGet(sendMessageX10, 0);
+		if(sendMessageX10_event.status == osEventMessage)
 		{
-			x10sendFrame(addr_frame,data_frame);
-			sendFrame_flag = 0;
+			if(sendMessageX10_event.value.v == 'a')
+			{
+				turnOnLamp();
+				x10sendFrame(addr_frame,data_frame);
+			}
+			else if(sendMessageX10_event.value.v == 'e')
+			{
+				turnOffLamp();
+				x10sendFrame(addr_frame,data_frame);
+			}
 		}
 		// D2
 		//HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_6);
@@ -82,14 +93,13 @@ void turnOnLamp(void)
 {
 	addr_frame = 0x60;
 	data_frame = 0x10;
-	sendFrame_flag = 1;
+	//sendFrame_flag = 1;
 }
 
-void turnOffLamp()
+void turnOffLamp(void)
 {
 	addr_frame = 0x60;
 	data_frame = 0x30;
-	sendFrame_flag = 1;
 }
 
 void x10sendSingleFrame(uint8_t addr_frame, uint8_t data_frame)

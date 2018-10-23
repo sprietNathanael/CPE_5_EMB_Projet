@@ -62,6 +62,8 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 u32_t nPageHits = 0;
+extern osMessageQId touchscreenLampStatus;
+extern osMessageQId sendMessageX10;
 
 /* Format of dynamic web page: the page header */
 static const unsigned char PAGE_START[] = {
@@ -181,6 +183,8 @@ static void http_server_serve(struct netconn *conn)
   char* buf;
   u16_t buflen;
   struct fs_file file;
+	char touchscreenLampStatus_data;
+	char sendMessageX10_data;
   
   /* Read the data from the port, blocking if nothing yet there. 
    We assume the request (the part we care about) is in one netbuf */
@@ -231,15 +235,20 @@ static void http_server_serve(struct netconn *conn)
         }
 				else if((strncmp(buf, "GET /allume", 11) == 0)) 
         {
-					turnOnLamp();
-					changeBulbState(1);
+					touchscreenLampStatus_data = 'a';
+					sendMessageX10_data = 'a';
+					osMessagePut(touchscreenLampStatus, (uint32_t)touchscreenLampStatus_data, 0);
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+					
 					netconn_write(conn, "200 OK", (size_t)(6*sizeof (char)), NETCONN_NOCOPY);
         }
 				else if((strncmp(buf, "GET /etteint", 12) == 0)) 
         {
           /* Load STM32F7xx page */
-					turnOffLamp();
-					changeBulbState(0);
+					touchscreenLampStatus_data = 'e';
+					sendMessageX10_data = 'e';
+					osMessagePut(touchscreenLampStatus, (uint32_t)touchscreenLampStatus_data, 0);
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
           netconn_write(conn, "200 OK", (size_t)(6*sizeof (char)), NETCONN_NOCOPY);
         }
         else 

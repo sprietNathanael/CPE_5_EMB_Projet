@@ -67,6 +67,12 @@ osThreadId TouchScreen_ThreadId;
 TIM_HandleTypeDef    TimHandle3;
 uint32_t uwPrescalerValue = 0;
 
+osMessageQDef(touchscreenLampStatus,1,char);
+osMessageQId touchscreenLampStatus;
+
+osMessageQDef(sendMessageX10,1,char);
+osMessageQId sendMessageX10;
+
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
 static void StartThread(void const * argument);
@@ -126,7 +132,10 @@ int main(void)
   * @retval None
   */
 static void StartThread(void const * argument)
-{ 
+{
+	
+	touchscreenLampStatus = osMessageCreate(osMessageQ(touchscreenLampStatus), NULL);
+	sendMessageX10 = osMessageCreate(osMessageQ(sendMessageX10), NULL);
   /* Initialize LCD */
   BSP_Config();
   

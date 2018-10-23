@@ -2,8 +2,11 @@
 
 static void displayBaseBulb();
 static void displayBulbState(int state);
-int changeStatusBulb = 0;
 int statusBulbState = -1;
+osEvent touchscreenLampStatus_event;
+extern osMessageQId touchscreenLampStatus;
+extern osMessageQId sendMessageX10;
+char sendMessageX10_data;
 
 void TouchScreen_Thread(void const *argument)
 {
@@ -68,14 +71,16 @@ void TouchScreen_Thread(void const *argument)
 				if(pointInRect(onX, onY, onSizeX, onSizeY, x, y))
 				{
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = ON  ", x, y, onX, onY, onSizeX, onSizeY);
-					turnOnLamp();
-					changeBulbState(1);
+					sendMessageX10_data = 'a';
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+					displayBulbState(1);
 				}
 				else if(pointInRect(offX, offY, offSizeX, offSizeY, x, y))
 				{
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = OFF  ", x, y, offX, offY, offSizeX, offSizeY);
-					turnOffLamp();
-					changeBulbState(0);
+					sendMessageX10_data = 'e';
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+					displayBulbState(0);
 				}
 				else
 				{
@@ -87,10 +92,17 @@ void TouchScreen_Thread(void const *argument)
 
 			}
 		}
-		if(changeStatusBulb)
+		touchscreenLampStatus_event = osMessageGet(touchscreenLampStatus, 0);
+		if(touchscreenLampStatus_event.status == osEventMessage)
 		{
-			displayBulbState(statusBulbState);
-			changeStatusBulb = 0;
+			if(touchscreenLampStatus_event.value.v == 'a')
+			{
+				displayBulbState(1);
+			}
+			else if(touchscreenLampStatus_event.value.v == 'e')
+			{
+				displayBulbState(0);
+			}
 		}
 		osDelay(50);
 	}
@@ -105,12 +117,6 @@ static int pointInRect(int rectX, int rectY, int rectSizeX, int rectSizeY, int p
 	
 	return 1;
 }
-
-void changeBulbState(int state)
-{
-	changeStatusBulb = 1;
-	statusBulbState = state;
-}	
 
 static void displayBaseBulb(void)
 {
