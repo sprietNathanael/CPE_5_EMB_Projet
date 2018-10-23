@@ -229,23 +229,18 @@ static void http_server_serve(struct netconn *conn)
           netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
           fs_close(&file);
         }
-				else if((strncmp(buf, "GET /allume", 11) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
+				else if((strncmp(buf, "GET /allume", 11) == 0)) 
         {
-          /* Load STM32F7xx page */
 					turnOnLamp();
 					changeBulbState(1);
-          fs_open(&file, "/STM32F7xx.html"); 
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
+					netconn_write(conn, "200 OK", (size_t)(6*sizeof (char)), NETCONN_NOCOPY);
         }
-				else if((strncmp(buf, "GET /etteint", 12) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
+				else if((strncmp(buf, "GET /etteint", 12) == 0)) 
         {
           /* Load STM32F7xx page */
 					turnOffLamp();
 					changeBulbState(0);
-          fs_open(&file, "/STM32F7xx.html"); 
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
+          netconn_write(conn, "200 OK", (size_t)(6*sizeof (char)), NETCONN_NOCOPY);
         }
         else 
         {
