@@ -31,7 +31,11 @@
 </head>
 
 <body>
-    <section id="lamp1" class="lampSection"></section>
+    <section id="lamp1" class="lampSection">
+		<p class="lampStatus">Statut : <span id="lamp1-status"></span></p>
+        <button type="button" onclick="turnOnLamp1()">ON</button>
+        <button type="button" onclick="turnOffLamp1()">OFF</button>
+	</section>
     <section id="lamp2" class="lampSection">
         <p class="lampStatus">Statut : <span id="lamp2-status"></span></p>
         <button type="button" onclick="turnOnLamp2()">ON</button>
@@ -41,16 +45,27 @@
     <script>
         const ip = "http://192.168.1.246";
         var getStatus_timeout;
-        getLampStatus();
+		const A1_ON = 'A';
+		const A1_OFF = 'a';
+		const A2_ON = 'B';
+		const A2_OFF = 'b';
+        getLamp1Status();
+		getLamp2Status();
+		
+		function turnOnLamp1() {
+            sendStatusLamp(1,'allume');
+        }
+
+        function turnOffLamp1() {
+            sendStatusLamp(1,'etteint');
+        }
 
         function turnOnLamp2() {
-            sendStatusLamp('allume');
-            setTimeout(getLampStatus, 500);
+            sendStatusLamp(2,'allume');
         }
 
         function turnOffLamp2() {
-            sendStatusLamp('etteint');
-            setTimeout(getLampStatus, 500);
+            sendStatusLamp(2,'etteint');
         }
 
         function createCORSRequest(method, url) {
@@ -77,33 +92,56 @@
             return xhr;
         }
 
-        function sendStatusLamp(action) {
+        function sendStatusLamp(lamp,action) {
             // const Http = new XMLHttpRequest();
-            const url = ip + '/' + action;
+            const url = ip + '/' + lamp + '/' + action;
             const xhr = createCORSRequest("GET", url);
             // Http.open("GET", url);
             xhr.send();
         }
-
-        function getLampStatus() {
+		
+		function getLamp1Status() {
             var xhr = new XMLHttpRequest();
 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
 					var status = "";
-					if(xhr.response === 'a'){
+					if(xhr.response === A1_ON){
 						status = "allumé";
-					} else if(xhr.response === 'e'){
+					} else if(xhr.response === A1_OFF){
+						status = "éteint";
+					} else if(xhr.response === '?'){
+						status = "indéterminé";
+					}
+                    document.getElementById("lamp1-status").innerHTML = status;
+                    getStatus_timeout = setTimeout(getLamp1Status, 500);
+                }
+            }
+
+            xhr.open('GET', ip + '/1/status', true);
+            xhr.send();
+        }
+		
+
+        function getLamp2Status() {
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+					var status = "";
+					if(xhr.response === A2_ON){
+						status = "allumé";
+					} else if(xhr.response === A2_OFF){
 						status = "éteint";
 					} else if(xhr.response === '?'){
 						status = "indéterminé";
 					}
                     document.getElementById("lamp2-status").innerHTML = status;
-                    getStatus_timeout = setTimeout(getLampStatus, 500);
+                    getStatus_timeout = setTimeout(getLamp2Status, 500);
                 }
             }
 
-            xhr.open('GET', ip + '/status', true);
+            xhr.open('GET', ip + '/2/status', true);
             xhr.send();
         }
     </script>

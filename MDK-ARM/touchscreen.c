@@ -3,14 +3,16 @@
 static void displayBaseBulb();
 static void displayBulbState(int state);
 int statusBulbState = -1;
-extern osMessageQId touchscreenLampStatus;
+extern osMessageQId touchscreenLamp1Status;
+extern osMessageQId touchscreenLamp2Status;
 extern osMessageQId sendMessageX10;
 char sendMessageX10_data;
 
 void TouchScreen_Thread(void const *argument)
 {
 	
-	osEvent touchscreenLampStatus_event;
+	osEvent touchscreenLamp1Status_event;
+	osEvent touchscreenLamp2Status_event;
 	static TS_StateTypeDef  TS_State;
 	int status = 0;
 	int x = 0;
@@ -91,14 +93,26 @@ void TouchScreen_Thread(void const *argument)
 
 			}
 		}
-		touchscreenLampStatus_event = osMessageGet(touchscreenLampStatus, 0);
-		if(touchscreenLampStatus_event.status == osEventMessage)
+		touchscreenLamp1Status_event = osMessageGet(touchscreenLamp1Status, 0);
+		if(touchscreenLamp1Status_event.status == osEventMessage)
 		{
-			if(touchscreenLampStatus_event.value.v == 'a')
+			if(touchscreenLamp1Status_event.value.v == A1_ON_STATUS)
+			{
+				//displayBulbState(1);
+			}
+			else if(touchscreenLamp1Status_event.value.v == A1_OFF_STATUS)
+			{
+				//displayBulbState(0);
+			}
+		}
+		touchscreenLamp2Status_event = osMessageGet(touchscreenLamp2Status, 0);
+		if(touchscreenLamp2Status_event.status == osEventMessage)
+		{
+			if(touchscreenLamp2Status_event.value.v == A2_ON_STATUS)
 			{
 				displayBulbState(1);
 			}
-			else if(touchscreenLampStatus_event.value.v == 'e')
+			else if(touchscreenLamp2Status_event.value.v == A2_OFF_STATUS)
 			{
 				displayBulbState(0);
 			}

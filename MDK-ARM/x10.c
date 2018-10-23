@@ -19,8 +19,10 @@ char lampStatus_data;
 osEvent sendMessageX10_event;
 extern osMessageQId sendMessageX10;
 
-extern osMessageQId touchscreenLampStatus;
-extern osMessageQId httpLampStatus;
+extern osMessageQId touchscreenLamp1Status;
+extern osMessageQId touchscreenLamp2Status;
+extern osMessageQId httpLamp1Status;
+extern osMessageQId httpLamp2Status;
 
 
 void x10_init()
@@ -50,35 +52,31 @@ void GPIO_Thread(void const *argument)
   
   for(;;)
   {
-		/*HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_RESET);
-		for(i = 0; i < 5; i++)
-		{
-			x10sendSingleFrame(0x60,0x10);
-			osDelay(150);
-		}			
-		osDelay(2500);
-		for(i = 0; i < 5; i++)
-		{
-			x10sendSingleFrame(0x60,0x30);
-			osDelay(150);
-		}*/
 		osDelay(500);
 		sendMessageX10_event = osMessageGet(sendMessageX10, 0);
 		if(sendMessageX10_event.status == osEventMessage)
 		{
-			if(sendMessageX10_event.value.v == A2_ON)
+			if(sendMessageX10_event.value.v == A1_ON)
 			{
-				turnOnLamp();
+				turnOnLamp1();
+				x10sendFrame(addr_frame,data_frame);
+			}
+			else if(sendMessageX10_event.value.v == A1_OFF)
+			{
+				turnOffLamp1();
+				x10sendFrame(addr_frame,data_frame);
+			}
+			else if(sendMessageX10_event.value.v == A2_ON)
+			{
+				turnOnLamp2();
 				x10sendFrame(addr_frame,data_frame);
 			}
 			else if(sendMessageX10_event.value.v == A2_OFF)
 			{
-				turnOffLamp();
+				turnOffLamp2();
 				x10sendFrame(addr_frame,data_frame);
 			}
 		}
-		// D2
-		//HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_6);
   }
 }
 
@@ -92,22 +90,42 @@ void x10sendFrame(uint8_t addr_frame, uint8_t data_frame)
 		}			
 }
 
-void turnOnLamp(void)
+void turnOnLamp1(void)
 {
 	
-	lampStatus_data = 'a';
-	osMessagePut(touchscreenLampStatus, (uint32_t)lampStatus_data, 0);
-	osMessagePut(httpLampStatus, (uint32_t)lampStatus_data, 0);
+	lampStatus_data = A1_ON_STATUS;
+	osMessagePut(touchscreenLamp1Status, (uint32_t)lampStatus_data, 0);
+	osMessagePut(httpLamp1Status, (uint32_t)lampStatus_data, 0);
+	addr_frame = X10_A1_ON_ADDR;
+	data_frame = X10_A1_ON_DATA;
+}
+
+void turnOffLamp1(void)
+{
+	
+	lampStatus_data = A1_OFF_STATUS;
+	osMessagePut(touchscreenLamp1Status, (uint32_t)lampStatus_data, 0);
+	osMessagePut(httpLamp1Status, (uint32_t)lampStatus_data, 0);
+	addr_frame = X10_A1_OFF_ADDR;
+	data_frame = X10_A1_OFF_DATA;
+}
+
+void turnOnLamp2(void)
+{
+	
+	lampStatus_data = A2_ON_STATUS;
+	osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
+	osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
 	addr_frame = X10_A2_ON_ADDR;
 	data_frame = X10_A2_ON_DATA;
 }
 
-void turnOffLamp(void)
+void turnOffLamp2(void)
 {
 	
-	lampStatus_data = 'e';
-	osMessagePut(touchscreenLampStatus, (uint32_t)lampStatus_data, 0);
-	osMessagePut(httpLampStatus, (uint32_t)lampStatus_data, 0);
+	lampStatus_data = A2_OFF_STATUS;
+	osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
+	osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
 	addr_frame = X10_A2_OFF_ADDR;
 	data_frame = X10_A2_OFF_DATA;
 }

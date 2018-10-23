@@ -67,11 +67,17 @@ osThreadId TouchScreen_ThreadId;
 TIM_HandleTypeDef    TimHandle3;
 uint32_t uwPrescalerValue = 0;
 
-osMessageQDef(touchscreenLampStatus,1,char);
-osMessageQId touchscreenLampStatus;
+osMessageQDef(touchscreenLamp1Status,1,char);
+osMessageQId touchscreenLamp1Status;
 
-osMessageQDef(httpLampStatus,1,char);
-osMessageQId httpLampStatus;
+osMessageQDef(touchscreenLamp2Status,1,char);
+osMessageQId touchscreenLamp2Status;
+
+osMessageQDef(httpLamp1Status,1,char);
+osMessageQId httpLamp1Status;
+
+osMessageQDef(httpLamp2Status,1,char);
+osMessageQId httpLamp2Status;
 
 osMessageQDef(sendMessageX10,1,char);
 osMessageQId sendMessageX10;
@@ -137,8 +143,10 @@ int main(void)
 static void StartThread(void const * argument)
 {
 	
-	touchscreenLampStatus = osMessageCreate(osMessageQ(touchscreenLampStatus), NULL);
-	httpLampStatus = osMessageCreate(osMessageQ(httpLampStatus), NULL);
+	touchscreenLamp1Status = osMessageCreate(osMessageQ(touchscreenLamp1Status), NULL);
+	touchscreenLamp2Status = osMessageCreate(osMessageQ(touchscreenLamp2Status), NULL);
+	httpLamp1Status = osMessageCreate(osMessageQ(httpLamp1Status), NULL);
+	httpLamp2Status = osMessageCreate(osMessageQ(httpLamp2Status), NULL);
 	sendMessageX10 = osMessageCreate(osMessageQ(sendMessageX10), NULL);
   /* Initialize LCD */
   BSP_Config();

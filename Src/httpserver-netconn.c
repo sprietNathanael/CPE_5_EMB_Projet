@@ -58,15 +58,17 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define WEBSERVER_THREAD_PRIO    osPriorityAboveNormal
-#define RESPONSE_BUFFER_SIZE 150
+#define RESPONSE_BUFFER_SIZE 200
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 u32_t nPageHits = 0;
 
-extern osMessageQId httpLampStatus;
+extern osMessageQId httpLamp1Status;
+extern osMessageQId httpLamp2Status;
 extern osMessageQId sendMessageX10;
-char lampStatus = '?';
+char lamp1Status = '?';
+char lamp2Status = '?';
 
 /* Format of dynamic web page: the page header */
 static const unsigned char PAGE_START[] = {
@@ -173,6 +175,7 @@ static const unsigned char PAGE_START[] = {
 
 /* Private function prototypes -----------------------------------------------*/
 static void buildTextResponse(char* text, char* buffer);
+static void buildCharResponse(char text, char* buffer);
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -194,11 +197,18 @@ static void http_server_serve(struct netconn *conn)
    We assume the request (the part we care about) is in one netbuf */
   recv_err = netconn_recv(conn, &inbuf);
 	
-	osEvent httpLampStatus_event;
-	httpLampStatus_event = osMessageGet(httpLampStatus, 0);
-	if(httpLampStatus_event.status == osEventMessage)
+	osEvent httpLamp1Status_event;
+	osEvent httpLamp2Status_event;
+	httpLamp1Status_event = osMessageGet(httpLamp1Status, 0);
+	if(httpLamp1Status_event.status == osEventMessage)
 	{
-			lampStatus = httpLampStatus_event.value.v;
+			lamp1Status = httpLamp1Status_event.value.v;
+	}
+	
+	httpLamp2Status_event = osMessageGet(httpLamp2Status, 0);
+	if(httpLamp2Status_event.status == osEventMessage)
+	{
+			lamp2Status = httpLamp2Status_event.value.v;
 	}
   
   if (recv_err == ERR_OK)
@@ -251,14 +261,29 @@ static void http_server_serve(struct netconn *conn)
           netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
           fs_close(&file);
         }
-				else if((strncmp(buf, "GET /allume", 11) == 0)) 
+				else if((strncmp(buf, "GET /1/allume", 13) == 0)) 
+        {
+					sendMessageX10_data = A1_ON;
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+					buildTextResponse("200 OK", responseBuffer);
+					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
+        }
+				else if((strncmp(buf, "GET /1/etteint", 14) == 0)) 
+        {
+          /* Load STM32F7xx page */
+					sendMessageX10_data = A1_OFF;
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+					buildTextResponse("200 OK", responseBuffer);
+          netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
+        }
+				else if((strncmp(buf, "GET /2/allume", 13) == 0)) 
         {
 					sendMessageX10_data = A2_ON;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 					buildTextResponse("200 OK", responseBuffer);
 					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
         }
-				else if((strncmp(buf, "GET /etteint", 12) == 0)) 
+				else if((strncmp(buf, "GET /2/etteint", 14) == 0)) 
         {
           /* Load STM32F7xx page */
 					sendMessageX10_data = A2_OFF;
@@ -266,9 +291,15 @@ static void http_server_serve(struct netconn *conn)
 					buildTextResponse("200 OK", responseBuffer);
           netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
         }
-				else if((strncmp(buf, "GET /status", 11) == 0)) 
+				else if((strncmp(buf, "GET /1/status", 11) == 0)) 
         {
-					buildTextResponse(&lampStatus, responseBuffer);
+					buildCharResponse(lamp1Status, responseBuffer);
+					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
+					//netconn_write(conn, &lampStatus, (size_t)(sizeof (char)), NETCONN_NOCOPY);
+        }
+				else if((strncmp(buf, "GET /2/status", 11) == 0)) 
+        {
+					buildCharResponse(lamp2Status, responseBuffer);
 					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
 					//netconn_write(conn, &lampStatus, (size_t)(sizeof (char)), NETCONN_NOCOPY);
         }
@@ -288,6 +319,17 @@ static void http_server_serve(struct netconn *conn)
   /* Delete the buffer (netconn_recv gives us ownership,
    so we have to make sure to deallocate the buffer) */
   netbuf_delete(inbuf);
+}
+
+static void buildCharResponse(char text, char* buffer)
+{
+	int i = 0;
+	for(i = 0; i < RESPONSE_BUFFER_SIZE; i++)
+	{
+		buffer[i] = '\0';
+	}
+	strcat(buffer, "HTTP/1.0 200 OK\nServer: lwIP/1.3.1\nAccess-Control-Allow-Origin: *\nContent-type: text\n\n");
+	buffer[strlen(buffer)] = text;
 }
 
 static void buildTextResponse(char* text, char* buffer)
