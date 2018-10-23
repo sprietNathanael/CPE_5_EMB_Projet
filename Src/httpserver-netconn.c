@@ -58,11 +58,13 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define WEBSERVER_THREAD_PRIO    osPriorityAboveNormal
+#define RESPONSE_BUFFER_SIZE 150
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 u32_t nPageHits = 0;
-extern osMessageQId touchscreenLampStatus;
+
+extern osMessageQId httpLampStatus;
 extern osMessageQId sendMessageX10;
 char lampStatus = '?';
 
@@ -170,6 +172,7 @@ static const unsigned char PAGE_START[] = {
 0x61,0x67,0x65,0x20,0x68,0x69,0x74,0x73,0x3a,0x0d,0x0a,0x00};
 
 /* Private function prototypes -----------------------------------------------*/
+static void buildTextResponse(char* text, char* buffer);
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -185,10 +188,18 @@ static void http_server_serve(struct netconn *conn)
   u16_t buflen;
   struct fs_file file;
 	char sendMessageX10_data;
+	char responseBuffer[RESPONSE_BUFFER_SIZE];
   
   /* Read the data from the port, blocking if nothing yet there. 
    We assume the request (the part we care about) is in one netbuf */
   recv_err = netconn_recv(conn, &inbuf);
+	
+	osEvent httpLampStatus_event;
+	httpLampStatus_event = osMessageGet(httpLampStatus, 0);
+	if(httpLampStatus_event.status == osEventMessage)
+	{
+			lampStatus = httpLampStatus_event.value.v;
+	}
   
   if (recv_err == ERR_OK)
   {
@@ -226,10 +237,17 @@ static void http_server_serve(struct netconn *conn)
            /* Load dynamic page */
            DynWebPage(conn);
         }
-        else if((strncmp(buf, "GET /STM32F7xx.html", 19) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
+				else if((strncmp(buf, "GET /STM32F7xx.html", 19) == 0)) 
         {
           /* Load STM32F7xx page */
           fs_open(&file, "/STM32F7xx.html"); 
+          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
+          fs_close(&file);
+        }
+        else if((strncmp(buf, "GET /index.html", 15) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
+        {
+          /* Load STM32F7xx page */
+          fs_open(&file, "/index.html"); 
           netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
           fs_close(&file);
         }
@@ -237,20 +255,22 @@ static void http_server_serve(struct netconn *conn)
         {
 					sendMessageX10_data = 'a';
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
-					
-					netconn_write(conn, "200 OK", (size_t)(6*sizeof (char)), NETCONN_NOCOPY);
+					buildTextResponse("200 OK", responseBuffer);
+					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
         }
 				else if((strncmp(buf, "GET /etteint", 12) == 0)) 
         {
           /* Load STM32F7xx page */
 					sendMessageX10_data = 'e';
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
-          netconn_write(conn, "200 OK", (size_t)(6*sizeof (char)), NETCONN_NOCOPY);
+					buildTextResponse("200 OK", responseBuffer);
+          netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
         }
 				else if((strncmp(buf, "GET /status", 11) == 0)) 
         {
-					
-					netconn_write(conn, &lampStatus, (size_t)(sizeof (char)), NETCONN_NOCOPY);
+					buildTextResponse(&lampStatus, responseBuffer);
+					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
+					//netconn_write(conn, &lampStatus, (size_t)(sizeof (char)), NETCONN_NOCOPY);
         }
         else 
         {
@@ -270,6 +290,17 @@ static void http_server_serve(struct netconn *conn)
   netbuf_delete(inbuf);
 }
 
+static void buildTextResponse(char* text, char* buffer)
+{
+	int i = 0;
+	for(i = 0; i < RESPONSE_BUFFER_SIZE; i++)
+	{
+		buffer[i] = '\0';
+	}
+	strcat(buffer, "HTTP/1.0 200 OK\nServer: lwIP/1.3.1\nAccess-Control-Allow-Origin: *\nContent-type: text\n\n");
+	strcat(buffer, text);
+	strcat(buffer,"\0");
+}
 
 /**
   * @brief  http server thread 
@@ -280,7 +311,7 @@ static void http_server_netconn_thread(void *arg)
 { 
   struct netconn *conn, *newconn;
   err_t err, accept_err;
-  
+	  
   /* Create a new TCP connection handle */
   conn = netconn_new(NETCONN_TCP);
   
@@ -306,7 +337,7 @@ static void http_server_netconn_thread(void *arg)
           /* delete connection */
           netconn_delete(newconn);
         }
-      }
+			}
     }
   }
 }

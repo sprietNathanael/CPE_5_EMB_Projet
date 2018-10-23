@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Lamp</title>
+    <style>
+        body{
+            background-color: #222222;
+        }
+
+        .lampSection{
+            display: inline-block;
+            position: absolute;
+            width: 40%;
+            border: 2px solid white;
+            text-align: center;
+            padding: 15px;
+        }
+
+        #lamp2{
+            left:50%;
+        }
+
+        .lampStatus{
+            color:white;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="lamp1" class="lampSection"></section>
+    <section id="lamp2" class="lampSection">
+        <p class="lampStatus">Statut : <span id="lamp2-status"></span></p>
+        <button type="button" onclick="turnOnLamp2()">ON</button>
+        <button type="button" onclick="turnOffLamp2()">OFF</button>
+    </section>
+
+    <script>
+        const ip = "http://192.168.1.246";
+        var getStatus_timeout;
+        getLampStatus();
+
+        function turnOnLamp2() {
+            sendStatusLamp('allume');
+            setTimeout(getLampStatus, 500);
+        }
+
+        function turnOffLamp2() {
+            sendStatusLamp('etteint');
+            setTimeout(getLampStatus, 500);
+        }
+
+        function createCORSRequest(method, url) {
+            var xhr = new XMLHttpRequest();
+            if ("withCredentials" in xhr) {
+
+                // Check if the XMLHttpRequest object has a "withCredentials" property.
+                // "withCredentials" only exists on XMLHTTPRequest2 objects.
+                xhr.open(method, url, true);
+
+            } else if (typeof XDomainRequest != "undefined") {
+
+                // Otherwise, check if XDomainRequest.
+                // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+                xhr = new XDomainRequest();
+                xhr.open(method, url);
+
+            } else {
+
+                // Otherwise, CORS is not supported by the browser.
+                xhr = null;
+
+            }
+            return xhr;
+        }
+
+        function sendStatusLamp(action) {
+            // const Http = new XMLHttpRequest();
+            const url = ip + '/' + action;
+            const xhr = createCORSRequest("GET", url);
+            // Http.open("GET", url);
+            xhr.send();
+        }
+
+        function getLampStatus() {
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+					var status = "";
+					if(xhr.response === 'a'){
+						status = "allumé";
+					} else if(xhr.response === 'e'){
+						status = "éteint";
+					} else if(xhr.response === '?'){
+						status = "indéterminé";
+					}
+                    document.getElementById("lamp2-status").innerHTML = status;
+                    getStatus_timeout = setTimeout(getLampStatus, 500);
+                }
+            }
+
+            xhr.open('GET', ip + '/status', true);
+            xhr.send();
+        }
+    </script>
+</body>
+
+</html>
