@@ -73,14 +73,12 @@ void TouchScreen_Thread(void const *argument)
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = ON  ", x, y, onX, onY, onSizeX, onSizeY);
 					sendMessageX10_data = 'a';
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
-					displayBulbState(1);
 				}
 				else if(pointInRect(offX, offY, offSizeX, offSizeY, x, y))
 				{
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = OFF  ", x, y, offX, offY, offSizeX, offSizeY);
 					sendMessageX10_data = 'e';
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
-					displayBulbState(0);
 				}
 				else
 				{
@@ -151,7 +149,7 @@ static void displayBulbState(int state)
 	if(state == 1)
 	{
 		color = LCD_COLOR_YELLOW;
-		
+	
 	}
 	else
 	{

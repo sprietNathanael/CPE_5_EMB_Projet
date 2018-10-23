@@ -14,10 +14,12 @@ int timerEnd = 0;
 uint8_t addr_frame;
 uint8_t data_frame;
 
+char touchscreenLampStatus_data;
 
 osEvent sendMessageX10_event;
 extern osMessageQId sendMessageX10;
 
+extern osMessageQId touchscreenLampStatus;
 
 
 void x10_init()
@@ -91,6 +93,9 @@ void x10sendFrame(uint8_t addr_frame, uint8_t data_frame)
 
 void turnOnLamp(void)
 {
+	
+	touchscreenLampStatus_data = 'a';
+	osMessagePut(touchscreenLampStatus, (uint32_t)touchscreenLampStatus_data, 0);
 	addr_frame = 0x60;
 	data_frame = 0x10;
 	//sendFrame_flag = 1;
@@ -98,6 +103,9 @@ void turnOnLamp(void)
 
 void turnOffLamp(void)
 {
+	
+	touchscreenLampStatus_data = 'e';
+	osMessagePut(touchscreenLampStatus, (uint32_t)touchscreenLampStatus_data, 0);
 	addr_frame = 0x60;
 	data_frame = 0x30;
 }
