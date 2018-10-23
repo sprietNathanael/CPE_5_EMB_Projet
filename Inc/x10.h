@@ -22,6 +22,7 @@
 #define A1_OFF_STATUS 'a'
 #define A2_ON_STATUS 'B'
 #define A2_OFF_STATUS 'b'
+#define A2_UNDETERMINED '?'
 
 #define X10_A1_ON_ADDR 0x60
 #define X10_A1_ON_DATA 0x00
@@ -33,9 +34,9 @@
 #define X10_A2_OFF_ADDR 0x60
 #define X10_A2_OFF_DATA 0x30
 
-#define X10_A_DIMM_UP_ADDR 0x60
-#define X10_A_DIMM_UP_DATA 0x88
 #define X10_A_BRIGHT_ADDR 0x60
+#define X10_A_BRIGHT_DATA 0x88
+#define X10_A_DIMM_ADDR 0x60
 #define X10_A_DIMM_DATA 0x98
 
 

@@ -42,11 +42,23 @@ void TouchScreen_Thread(void const *argument)
 	const int off2Y = (BSP_LCD_GetYSize() / 4);
 	const int off2SizeX = BSP_LCD_GetXSize()/10;
 	const int off2SizeY = 35;
+	
+	const int brightX = 8*(BSP_LCD_GetXSize()/10);
+	const int brightY = 3*(BSP_LCD_GetYSize() / 4);
+	const int brightSizeX = BSP_LCD_GetXSize()/10;
+	const int brightSizeY = 35;
+	
+	const int dimmX = 6*(BSP_LCD_GetXSize()/10);
+	const int dimmY = 3*(BSP_LCD_GetYSize() / 4);
+	const int dimmSizeX = BSP_LCD_GetXSize()/10;
+	const int dimmSizeY = 35;
 	uint8_t  text[50];
 	displayButton(on1X, on1Y, on1SizeX, on1SizeY, (uint8_t*)"ON", LCD_COLOR_YELLOW);
 	displayButton(off1X, off1Y, off1SizeX, off1SizeY, (uint8_t*)"OFF", LCD_COLOR_LIGHTGRAY);
 	displayButton(on2X, on2Y, on2SizeX, on2SizeY, (uint8_t*)"ON", LCD_COLOR_YELLOW);
 	displayButton(off2X, off2Y, off2SizeX, off2SizeY, (uint8_t*)"OFF", LCD_COLOR_LIGHTGRAY);
+	displayButton(brightX, brightY, brightSizeX, brightSizeY, (uint8_t*)"+20%", LCD_COLOR_YELLOW);
+	displayButton(dimmX, dimmY, dimmSizeX, dimmSizeY, (uint8_t*)"-20%", LCD_COLOR_LIGHTGRAY);
 	BSP_LCD_SetFont(&Font24);
 	BSP_LCD_DisplayStringAt(2*(BSP_LCD_GetXSize()/10)+12, (BSP_LCD_GetYSize() / 4)+11, (uint8_t*)"A1", LEFT_MODE);
 	BSP_LCD_DisplayStringAt(7*(BSP_LCD_GetXSize()/10)+12, (BSP_LCD_GetYSize() / 4)+11, (uint8_t*)"A2", LEFT_MODE);
@@ -104,7 +116,16 @@ void TouchScreen_Thread(void const *argument)
 					sendMessageX10_data = A2_OFF;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 				}
-				
+				else if(pointInRect(brightX, brightY, brightSizeX, brightSizeY, x, y))
+				{
+					sendMessageX10_data = A_BRIGHT;
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+				}				
+				else if(pointInRect(dimmX, dimmY, dimmSizeX, dimmSizeY, x, y))
+				{
+					sendMessageX10_data = A_DIMM;
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+				}
 
 			}
 		}
@@ -130,6 +151,10 @@ void TouchScreen_Thread(void const *argument)
 			else if(touchscreenLamp2Status_event.value.v == A2_OFF_STATUS)
 			{
 				displayBulbState(2,0);
+			}
+			else if(touchscreenLamp2Status_event.value.v == A2_UNDETERMINED)
+			{
+				displayBulbState(2,-1);
 			}
 		}
 		osDelay(50);

@@ -2,6 +2,8 @@
 
 static void sendInit(void);
 static void sendFrame(void);
+void brightA(void);
+void dimmA(void);
 
 uint32_t currentFrame;
 int currentDuration = 0;
@@ -76,6 +78,16 @@ void GPIO_Thread(void const *argument)
 				turnOffLamp2();
 				x10sendFrame(addr_frame,data_frame);
 			}
+			else if(sendMessageX10_event.value.v == A_BRIGHT)
+			{
+				brightA();
+				x10sendFrame(addr_frame,data_frame);
+			}
+			else if(sendMessageX10_event.value.v == A_DIMM)
+			{
+				dimmA();
+				x10sendFrame(addr_frame,data_frame);
+			}
 		}
   }
 }
@@ -128,6 +140,24 @@ void turnOffLamp2(void)
 	osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
 	addr_frame = X10_A2_OFF_ADDR;
 	data_frame = X10_A2_OFF_DATA;
+}
+
+void brightA(void)
+{
+	lampStatus_data = A2_UNDETERMINED;
+	osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
+	osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
+	addr_frame = X10_A_BRIGHT_ADDR;
+	data_frame = X10_A_BRIGHT_DATA;
+}
+
+void dimmA(void)
+{
+	lampStatus_data = A2_UNDETERMINED;
+	osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
+	osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
+	addr_frame = X10_A_DIMM_ADDR;
+	data_frame = X10_A_DIMM_DATA;
 }
 
 void x10sendSingleFrame(uint8_t addr_frame, uint8_t data_frame)
