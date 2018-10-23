@@ -72,13 +72,13 @@ void TouchScreen_Thread(void const *argument)
 				if(pointInRect(onX, onY, onSizeX, onSizeY, x, y))
 				{
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = ON  ", x, y, onX, onY, onSizeX, onSizeY);
-					sendMessageX10_data = 'a';
+					sendMessageX10_data = A2_ON;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 				}
 				else if(pointInRect(offX, offY, offSizeX, offSizeY, x, y))
 				{
 					sprintf((char*)text, "%d ; %d of rect (%d;%d)[%d - %d] = OFF  ", x, y, offX, offY, offSizeX, offSizeY);
-					sendMessageX10_data = 'e';
+					sendMessageX10_data = A2_OFF;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 				}
 				else

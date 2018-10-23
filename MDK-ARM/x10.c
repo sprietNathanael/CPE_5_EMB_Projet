@@ -66,12 +66,12 @@ void GPIO_Thread(void const *argument)
 		sendMessageX10_event = osMessageGet(sendMessageX10, 0);
 		if(sendMessageX10_event.status == osEventMessage)
 		{
-			if(sendMessageX10_event.value.v == 'a')
+			if(sendMessageX10_event.value.v == A2_ON)
 			{
 				turnOnLamp();
 				x10sendFrame(addr_frame,data_frame);
 			}
-			else if(sendMessageX10_event.value.v == 'e')
+			else if(sendMessageX10_event.value.v == A2_OFF)
 			{
 				turnOffLamp();
 				x10sendFrame(addr_frame,data_frame);
@@ -98,9 +98,8 @@ void turnOnLamp(void)
 	lampStatus_data = 'a';
 	osMessagePut(touchscreenLampStatus, (uint32_t)lampStatus_data, 0);
 	osMessagePut(httpLampStatus, (uint32_t)lampStatus_data, 0);
-	addr_frame = 0x60;
-	data_frame = 0x10;
-	//sendFrame_flag = 1;
+	addr_frame = X10_A2_ON_ADDR;
+	data_frame = X10_A2_ON_DATA;
 }
 
 void turnOffLamp(void)
@@ -109,8 +108,8 @@ void turnOffLamp(void)
 	lampStatus_data = 'e';
 	osMessagePut(touchscreenLampStatus, (uint32_t)lampStatus_data, 0);
 	osMessagePut(httpLampStatus, (uint32_t)lampStatus_data, 0);
-	addr_frame = 0x60;
-	data_frame = 0x30;
+	addr_frame = X10_A2_OFF_ADDR;
+	data_frame = X10_A2_OFF_DATA;
 }
 
 void x10sendSingleFrame(uint8_t addr_frame, uint8_t data_frame)

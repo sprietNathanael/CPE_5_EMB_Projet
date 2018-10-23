@@ -253,7 +253,7 @@ static void http_server_serve(struct netconn *conn)
         }
 				else if((strncmp(buf, "GET /allume", 11) == 0)) 
         {
-					sendMessageX10_data = 'a';
+					sendMessageX10_data = A2_ON;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 					buildTextResponse("200 OK", responseBuffer);
 					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
@@ -261,7 +261,7 @@ static void http_server_serve(struct netconn *conn)
 				else if((strncmp(buf, "GET /etteint", 12) == 0)) 
         {
           /* Load STM32F7xx page */
-					sendMessageX10_data = 'e';
+					sendMessageX10_data = A2_OFF;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 					buildTextResponse("200 OK", responseBuffer);
           netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
