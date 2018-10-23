@@ -3,13 +3,14 @@
 static void displayBaseBulb();
 static void displayBulbState(int state);
 int statusBulbState = -1;
-osEvent touchscreenLampStatus_event;
 extern osMessageQId touchscreenLampStatus;
 extern osMessageQId sendMessageX10;
 char sendMessageX10_data;
 
 void TouchScreen_Thread(void const *argument)
 {
+	
+	osEvent touchscreenLampStatus_event;
 	static TS_StateTypeDef  TS_State;
 	int status = 0;
 	int x = 0;

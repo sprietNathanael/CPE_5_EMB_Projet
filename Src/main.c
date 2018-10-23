@@ -70,6 +70,9 @@ uint32_t uwPrescalerValue = 0;
 osMessageQDef(touchscreenLampStatus,1,char);
 osMessageQId touchscreenLampStatus;
 
+osMessageQDef(httpLampStatus,1,char);
+osMessageQId httpLampStatus;
+
 osMessageQDef(sendMessageX10,1,char);
 osMessageQId sendMessageX10;
 
@@ -135,6 +138,7 @@ static void StartThread(void const * argument)
 {
 	
 	touchscreenLampStatus = osMessageCreate(osMessageQ(touchscreenLampStatus), NULL);
+	httpLampStatus = osMessageCreate(osMessageQ(httpLampStatus), NULL);
 	sendMessageX10 = osMessageCreate(osMessageQ(sendMessageX10), NULL);
   /* Initialize LCD */
   BSP_Config();
