@@ -52,7 +52,7 @@
 #include <stdio.h>
 #include "httpserver-netconn.h"
 #include "cmsis_os.h"
-#include "x10.h"
+#include "x10_send.h"
 #include "touchscreen.h"
 
 /* Private typedef -----------------------------------------------------------*/

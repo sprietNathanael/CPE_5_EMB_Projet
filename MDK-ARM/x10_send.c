@@ -1,4 +1,4 @@
-#include "x10.h"
+#include "x10_send.h"
 
 static void sendInit(void);
 static void sendFrame(void);
@@ -27,7 +27,7 @@ extern osMessageQId httpLamp1Status;
 extern osMessageQId httpLamp2Status;
 
 
-void x10_init()
+void x10Init_send()
 {
 	GPIO_InitTypeDef  gpio_init_structure;
 	/* Enable the GPIO clock */
@@ -45,10 +45,10 @@ void x10_init()
 	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_RESET);
 }
 
-void GPIO_Thread(void const *argument)
+void x10Thread_send(void const *argument)
 {
   (void) argument;
-	x10_init();
+	x10Init_send();
   uint32_t PreviousWakeTime = osKernelSysTick();
 	int i  = 0;
   
@@ -109,8 +109,8 @@ void turnOnLamp1(void)
 {
 	
 	lampStatus_data = A1_ON_STATUS;
-	osMessagePut(touchscreenLamp1Status, (uint32_t)lampStatus_data, 0);
-	osMessagePut(httpLamp1Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(touchscreenLamp1Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(httpLamp1Status, (uint32_t)lampStatus_data, 0);
 	addr_frame = X10_A1_ON_ADDR;
 	data_frame = X10_A1_ON_DATA;
 }
@@ -119,8 +119,8 @@ void turnOffLamp1(void)
 {
 	
 	lampStatus_data = A1_OFF_STATUS;
-	osMessagePut(touchscreenLamp1Status, (uint32_t)lampStatus_data, 0);
-	osMessagePut(httpLamp1Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(touchscreenLamp1Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(httpLamp1Status, (uint32_t)lampStatus_data, 0);
 	addr_frame = X10_A1_OFF_ADDR;
 	data_frame = X10_A1_OFF_DATA;
 }
@@ -129,8 +129,8 @@ void turnOnLamp2(void)
 {
 	
 	lampStatus_data = A2_ON_STATUS;
-	osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
-	osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
 	addr_frame = X10_A2_ON_ADDR;
 	data_frame = X10_A2_ON_DATA;
 }
@@ -139,8 +139,8 @@ void turnOffLamp2(void)
 {
 	
 	lampStatus_data = A2_OFF_STATUS;
-	osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
-	osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(touchscreenLamp2Status, (uint32_t)lampStatus_data, 0);
+	//osMessagePut(httpLamp2Status, (uint32_t)lampStatus_data, 0);
 	addr_frame = X10_A2_OFF_ADDR;
 	data_frame = X10_A2_OFF_DATA;
 }

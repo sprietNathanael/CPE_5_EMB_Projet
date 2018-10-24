@@ -169,4 +169,14 @@ void ETH_IRQHandler(void)
 {
 }*/
 
+/**
+  * @brief  This function handles External line 9_5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI3_IRQHandler(void)
+{
+   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

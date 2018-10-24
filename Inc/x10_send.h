@@ -1,5 +1,5 @@
-#ifndef __X10_H
-#define __X10_H
+#ifndef __X10_SEND_H
+#define __X10_SEND_H
 
 #include "stm32f7xx_hal.h"
 #include "stm32746g_discovery.h"
@@ -40,8 +40,8 @@
 #define X10_A_DIMM_DATA 0x98
 
 
-void GPIO_Thread(void const *argument);
-void x10_init(void);
+void x10Thread_send(void const *argument);
+void x10Init_send(void);
 void nextX10frame(void);
 void x10sendFrame(uint8_t addr_frame, uint8_t data_frame);
 void x10sendSingleFrame(uint8_t addr_frame, uint8_t data_frame);

@@ -54,7 +54,8 @@
 #include "app_ethernet.h"
 #include "httpserver-netconn.h"
 #include "lcd_log.h"
-#include "x10.h"
+#include "x10_send.h"
+#include "x10_receive.h"
 #include "touchscreen.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,7 +63,8 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 struct netif gnetif; /* network interface structure */
-osThreadId GPIO_ThreadId;
+osThreadId x10Thread_send_Id;
+osThreadId x10Thread_receive_Id;
 osThreadId TouchScreen_ThreadId;
 TIM_HandleTypeDef    TimHandle3;
 uint32_t uwPrescalerValue = 0;
@@ -169,8 +171,11 @@ static void StartThread(void const * argument)
   osThreadCreate (osThread(DHCP), &gnetif);
 #endif
 	
-	osThreadDef(GPIO_TH, GPIO_Thread, osPriorityBelowNormal, 0, configMINIMAL_STACK_SIZE);
-	GPIO_ThreadId = osThreadCreate(osThread(GPIO_TH), NULL);
+	osThreadDef(x10_send_TH, x10Thread_send, osPriorityBelowNormal, 0, configMINIMAL_STACK_SIZE);
+	x10Thread_send_Id = osThreadCreate(osThread(x10_send_TH), NULL);
+	
+	osThreadDef(x10_receive_TH, x10Thread_receive, osPriorityBelowNormal, 0, configMINIMAL_STACK_SIZE);
+	x10Thread_send_Id = osThreadCreate(osThread(x10_receive_TH), NULL);
 	
 	osThreadDef(TOUCHSCREEN_TH, TouchScreen_Thread, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
 	TouchScreen_ThreadId = osThreadCreate(osThread(TOUCHSCREEN_TH), NULL);
