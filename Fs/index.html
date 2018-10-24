@@ -21,6 +21,8 @@
 			margin:2%;
 			border-radius: 20px;
 			font-family: sans-serif;
+			box-sizing: border-box;
+			color: white;
         }
 
         #lamp2{
@@ -30,15 +32,12 @@
 		#lamp1{
             left:0;
         }
-
-        .lampStatus{
-            color:white;
-        }
     </style>
 </head>
 
 <body>
     <section id="lamp1" class="lampSection">
+		<h1>A1</h1>
 		<p class="lampStatus">Statut : <span id="lamp1-status"></span></p>
         <p>
 			<button type="button" onclick="turnOnLamp1()">ON</button>
@@ -46,6 +45,7 @@
 		</p>
 	</section>
     <section id="lamp2" class="lampSection">
+		<h1>A2</h1>
         <p class="lampStatus">Statut : <span id="lamp2-status"></span></p>
         <p>
 			<button type="button" onclick="turnOnLamp2()">ON</button>
