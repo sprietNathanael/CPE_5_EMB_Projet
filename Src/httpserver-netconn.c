@@ -261,14 +261,14 @@ static void http_server_serve(struct netconn *conn)
           netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
           fs_close(&file);
         }
-				else if((strncmp(buf, "GET /1/allume", 13) == 0)) 
+				else if((strncmp(buf, "GET /1/on", 9) == 0)) 
         {
 					sendMessageX10_data = A1_ON;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 					buildTextResponse("200 OK", responseBuffer);
 					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
         }
-				else if((strncmp(buf, "GET /1/etteint", 14) == 0)) 
+				else if((strncmp(buf, "GET /1/off", 10) == 0)) 
         {
           /* Load STM32F7xx page */
 					sendMessageX10_data = A1_OFF;
@@ -276,17 +276,32 @@ static void http_server_serve(struct netconn *conn)
 					buildTextResponse("200 OK", responseBuffer);
           netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
         }
-				else if((strncmp(buf, "GET /2/allume", 13) == 0)) 
+				else if((strncmp(buf, "GET /2/on", 9) == 0)) 
         {
 					sendMessageX10_data = A2_ON;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 					buildTextResponse("200 OK", responseBuffer);
 					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
         }
-				else if((strncmp(buf, "GET /2/etteint", 14) == 0)) 
+				else if((strncmp(buf, "GET /2/off", 10) == 0)) 
         {
           /* Load STM32F7xx page */
 					sendMessageX10_data = A2_OFF;
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+					buildTextResponse("200 OK", responseBuffer);
+          netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
+        }
+				else if((strncmp(buf, "GET /2/bright", 13) == 0)) 
+        {
+					sendMessageX10_data = A_BRIGHT;
+					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
+					buildTextResponse("200 OK", responseBuffer);
+					netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);
+        }
+				else if((strncmp(buf, "GET /2/dim", 10) == 0)) 
+        {
+          /* Load STM32F7xx page */
+					sendMessageX10_data = A_DIMM;
 					osMessagePut(sendMessageX10, (uint32_t)sendMessageX10_data, 0);
 					buildTextResponse("200 OK", responseBuffer);
           netconn_write(conn, responseBuffer, (size_t)(sizeof (char) * strlen(responseBuffer)), NETCONN_NOCOPY);

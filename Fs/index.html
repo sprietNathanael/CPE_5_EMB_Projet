@@ -40,6 +40,8 @@
         <p class="lampStatus">Statut : <span id="lamp2-status"></span></p>
         <button type="button" onclick="turnOnLamp2()">ON</button>
         <button type="button" onclick="turnOffLamp2()">OFF</button>
+		<button type="button" onclick="dim()">-20%</button>
+        <button type="button" onclick="bright()">+20%</button>
     </section>
 
     <script>
@@ -53,20 +55,28 @@
 		getLamp2Status();
 		
 		function turnOnLamp1() {
-            sendStatusLamp(1,'allume');
+            sendStatusLamp(1,'on');
         }
 
         function turnOffLamp1() {
-            sendStatusLamp(1,'etteint');
+            sendStatusLamp(1,'off');
         }
 
         function turnOnLamp2() {
-            sendStatusLamp(2,'allume');
+            sendStatusLamp(2,'on');
         }
 
         function turnOffLamp2() {
-            sendStatusLamp(2,'etteint');
+            sendStatusLamp(2,'off');
         }
+		
+		function dim(){
+			sendStatusLamp(2,'dim');
+		}
+		
+		function bright(){
+			sendStatusLamp(2,'bright');
+		}
 
         function createCORSRequest(method, url) {
             var xhr = new XMLHttpRequest();
