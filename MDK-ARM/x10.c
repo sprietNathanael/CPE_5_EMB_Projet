@@ -70,6 +70,9 @@ void GPIO_Thread(void const *argument)
 			}
 			else if(sendMessageX10_event.value.v == A2_ON)
 			{
+				turnOffLamp2();
+				x10sendFrame(addr_frame,data_frame);
+				osDelay(500);
 				turnOnLamp2();
 				x10sendFrame(addr_frame,data_frame);
 			}
