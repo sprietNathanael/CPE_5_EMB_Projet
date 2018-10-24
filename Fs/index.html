@@ -15,13 +15,20 @@
             display: inline-block;
             position: absolute;
             width: 40%;
-            border: 2px solid white;
+            border: 5px solid white;
             text-align: center;
             padding: 15px;
+			margin:2%;
+			border-radius: 20px;
+			font-family: sans-serif;
         }
 
         #lamp2{
-            left:50%;
+            right:0;
+        }
+		
+		#lamp1{
+            left:0;
         }
 
         .lampStatus{
@@ -33,15 +40,21 @@
 <body>
     <section id="lamp1" class="lampSection">
 		<p class="lampStatus">Statut : <span id="lamp1-status"></span></p>
-        <button type="button" onclick="turnOnLamp1()">ON</button>
-        <button type="button" onclick="turnOffLamp1()">OFF</button>
+        <p>
+			<button type="button" onclick="turnOnLamp1()">ON</button>
+			<button type="button" onclick="turnOffLamp1()">OFF</button>
+		</p>
 	</section>
     <section id="lamp2" class="lampSection">
         <p class="lampStatus">Statut : <span id="lamp2-status"></span></p>
-        <button type="button" onclick="turnOnLamp2()">ON</button>
-        <button type="button" onclick="turnOffLamp2()">OFF</button>
-		<button type="button" onclick="dim()">-20%</button>
-        <button type="button" onclick="bright()">+20%</button>
+        <p>
+			<button type="button" onclick="turnOnLamp2()">ON</button>
+			<button type="button" onclick="turnOffLamp2()">OFF</button>
+		</p>
+		<p>
+			<button type="button" onclick="dim()">-20%</button>
+			<button type="button" onclick="bright()">+20%</button>
+		</p>
     </section>
 
     <script>
